@@ -1,0 +1,172 @@
+﻿<!DOCTYPE html>
+
+<html>
+	<head>
+		<title>Crappy the crab</title>
+		<meta charset="utf-8">
+		
+		<meta name="viewport" content="width=device-width, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0">
+		
+		<script src="three.min.js"></script>
+		<script src="stats.min.js"></script>
+		<script src="WebGL.js"></script>
+		<script src="vax.js"></script>
+	</head>
+	
+	<body>
+		<script>
+			vaxInit();
+			//1.The body of the crab
+			var crab_body = new THREE.Mesh( new THREE.BoxGeometry( 34,24,10 )
+											,new THREE.MeshLambertMaterial( {color: 0xf34a18} ) );
+			crab_body.position.set(0,5,0);
+			//The body of the crab
+			
+			//2.The eyes of the crab
+			var crab_eye_stem1 = new THREE.Mesh(new THREE.BoxGeometry(2,8,2)
+												, new THREE.MeshLambertMaterial( {color: 0xf34a18}));
+			var crab_eye_stem2 = new THREE.Mesh(new THREE.BoxGeometry(2,8,2)
+												, new THREE.MeshLambertMaterial( {color: 0xf34a18}));
+												
+			crab_eye_stem1.position.x -= 7;
+			crab_eye_stem1.position.y += 15 +  crab_body.position.y;
+			crab_eye_stem2.position.x += 7;
+			crab_eye_stem2.position.y += 15 + crab_body.position.y;
+			
+			var crab_eye1 = new THREE.Group();
+			
+			var crab_eyeball = new THREE.Mesh(new THREE.SphereGeometry(3,20,32)
+											, new THREE.MeshLambertMaterial( {color: 0xfff9ff} ) );		
+			var crab_eye_pupil = new THREE.Mesh(new THREE.SphereGeometry(1,20,32)
+											, new THREE.MeshLambertMaterial( {color: 0x000000} ) );
+											
+			crab_eye_pupil.position.set(0,0,2.1);
+			crab_eye1.add(crab_eyeball,crab_eye_pupil);
+			crab_eye1.position.x -= 7;
+			crab_eye1.position.y += 6 + crab_eye_stem1.position.y;
+			
+			var crab_eye2 = new THREE.Group();
+			crab_eye2.copy(crab_eye1);
+			crab_eye2.position.x = 7;
+			//The eyes of the crab
+			
+			
+			//3.leg form of the crab
+			const crab_leg_shape = new THREE.Shape();
+			crab_leg_shape.moveTo( 0,0 );
+			crab_leg_shape.lineTo(10,0);
+			crab_leg_shape.lineTo(10,2);
+			crab_leg_shape.lineTo(0,2);
+			crab_leg_shape.lineTo(-10,-4);
+			crab_leg_shape.lineTo(-17,-15);
+			crab_leg_shape.lineTo(-10,-5);
+			crab_leg_shape.lineTo(0,0);
+			
+			const extrudeSettings = {
+				steps: 2,
+				depth: 2,
+				bevelEnabled: true,
+				bevelThickness: 0,
+				bevelSize: 1,
+				bevelOffset: 0,
+				bevelSegments: 1
+			};
+			//leg form of the crab
+			
+			//4.creating the legs
+			var legs_group_left = new THREE.Group();
+			var legs_group_right = new THREE.Group();
+			var legs = [];
+			var distance = 0;
+			for (var i = 0; i< 4; i++){
+					legs[i] = new THREE.Mesh( new THREE.ExtrudeGeometry( crab_leg_shape, extrudeSettings )
+												,new THREE.MeshLambertMaterial({color: 0xf34a25})) ;
+					 
+					legs[i].position.set(0,-2 + distance,0);
+					distance += 5;
+					legs_group_left.add(legs[i]);
+			}
+			
+			legs_group_right.copy(legs_group_left);
+			legs_group_right.rotation.set(0,Math.PI,0);
+
+			legs_group_left.position.set(-26,-4,0);
+			legs_group_right.position.set(26,-4,0);
+			//creating the legs
+			
+			//5.creating the claws
+				const claw = new THREE.Shape();
+				claw.moveTo(0,0);
+				claw.lineTo(-17,0);
+				claw.lineTo(-17,0.1);
+				var y = 0.1, j = 0.4;
+				for(var i = -16.5; i <= -13; i += 0.5 ){
+					y += j;
+					claw.lineTo(i, y );
+					j *= -1;
+					console.log(i);
+				}
+				claw.lineTo(-12,0.1);
+				claw.lineTo(-12,2);
+				claw.lineTo(-15,2);
+				y = 2, j = -0.4;
+				for(var i = -14.5; i <= -12.5; i += 0.5 ){
+					y += j;
+					claw.lineTo(i, y );
+					j *= -1;
+					console.log(i);
+				}
+				claw.lineTo(-12,2);
+				claw.lineTo(0,2);
+				claw.lineTo(0,0);
+				
+				var crab_claw1 = new THREE.Mesh( new THREE.ExtrudeGeometry( claw, extrudeSettings )
+												,new THREE.MeshLambertMaterial({color: 0xf34a25})) ;
+				crab_claw1.rotation.set(0,0,-Math.PI/5);
+				crab_claw1.position.set(-17,14,0);
+				
+				var crab_claw2 = new THREE.Mesh( new THREE.ExtrudeGeometry( claw, extrudeSettings )
+												,new THREE.MeshLambertMaterial({color: 0xf34a25})) ;
+				crab_claw2.position.set(17,14,0);
+				crab_claw2.rotation.set(0,Math.PI,-Math.PI/5);
+			//creating the claws
+			
+			//6.creating the eyebrows
+				var crab_eyebrow1 = new THREE.Mesh(new THREE.BoxGeometry(6,1,0.5), new THREE.MeshLambertMaterial({color: 0x000000}));
+				var crab_eyebrow2 = new THREE.Mesh(new THREE.BoxGeometry(6,1,0.5), new THREE.MeshLambertMaterial({color: 0x000000}));
+				
+				crab_eyebrow1.position.set(7,29.5,1);
+				crab_eyebrow1.rotation.set(t,0,0);
+				crab_eyebrow2.position.set(-7,29.5,1);
+			//creating the eyebrows
+			
+			//7.creating the mouth
+				var crab_mouth = new THREE.Mesh(new THREE.BoxGeometry(4,0.3,0.3), new THREE.MeshLambertMaterial({color: 0x000000}));
+				crab_mouth.position.set(0,10,5);
+			//creating the mouth
+			
+			//adding parts
+			var crab = new THREE.Group();
+			crab.add(crab_mouth,
+					crab_eyebrow1,crab_eyebrow2,
+					crab_claw1,crab_claw2,
+					crab_eye1,crab_eye2,crab_eye_stem1,crab_eye_stem2,
+					legs_group_left,legs_group_right,
+					crab_body);
+			crab.position.set(0,0,0);
+			scene.add(crab);
+			
+			//camera setup
+			camera.position.set(0,40,100);
+			camera.lookAt(0,0,0);
+			
+			function animate()
+			{
+				//rotating forward due to a request from a friend 'cause "it's so menacing"
+				crab.rotation.set(0,3*t/4,0);
+				crab_eyebrow1.rotation.set(0,0,4*Math.pow(Math.sin(2*t)/2,3));
+				crab_eyebrow2.rotation.set(0,0,4*Math.pow(Math.sin(-2*t)/2,3));
+			}
+		</script>
+	</body>
+</html>
