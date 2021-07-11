@@ -1,3 +1,3 @@
 # Crappy
 a VRARXR HW <br />
-A crab that rotates in the nothingness
+Just a crab that rotates in the nothingness
